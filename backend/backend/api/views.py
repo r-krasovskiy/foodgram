@@ -131,7 +131,6 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(status=HTTP_405_METHOD_NOT_ALLOWED)
 
 
-
 class TagViewSet(viewsets.ModelViewSet):
     """Представление модели тегов."""
 
