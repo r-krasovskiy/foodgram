@@ -8,6 +8,7 @@ from api.constants import MAX_LENGTH_SHORT, MAX_LENGTH_LONG
 
 User = get_user_model()
 
+
 class Tag(models.Model):
     """Модель тегов к рецептам.
 
