@@ -202,7 +202,7 @@ class ShoppingList(models.Model):
         verbose_name_plural = 'Списки покупок'
 
 
-class Follow(models.Model):
+class Subscription(models.Model):
     """Подписки пользователя на авторов рецептов."""
     user = models.ForeignKey(
         User,

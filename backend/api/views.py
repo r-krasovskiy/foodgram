@@ -26,19 +26,21 @@ from api.serializers import (
     RecipeWriteSerializer
 )
 
-from recipes.models import (Recipe, User, Follow, Tag, Ingredient)
+from recipes.models import (Recipe, User, Subscription, Tag, Ingredient)
 from rest_framework.permissions import (AllowAny, IsAuthenticated,)
 from api.permissions import IsOwnerOrAdmin
 from api.filters import RecipeFilter
 from api.pagination import ApiPagination
 
+from djoser.views import UserViewSet as DjoserUserViewSet
+
 User = get_user_model()
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(DjoserUserViewSet):
     queryset = User.objects.all()
     pagination_class = ApiPagination
-    serializer_class = UserGetSerializer
+    serializer_class = UserPostSerializer
 
     def get_serializer_class(self):
         """Выбор сериализатора в зависимости от выполняемого действия."""
@@ -63,7 +65,7 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=HTTP_200_OK)
 
-    def current_user(self, request):
+    def me(self, request):
         """Возвращает профиль текущего пользователя."""
         if not request.user.is_authenticated:
             return Response(status=HTTP_403_FORBIDDEN)
@@ -88,7 +90,7 @@ class UserViewSet(viewsets.ModelViewSet):
         
         return Response(status=HTTP_405_METHOD_NOT_ALLOWED)
 
-    def following(self, request, id=None):
+    def subscriptions(self, request, id=None):
         """Методы работы с подписками."""
         if not request.user.is_authenticated:
             return Response(status=HTTP_403_FORBIDDEN)
@@ -125,7 +127,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 }
             )
             serializer.is_valid(raise_exception=True)
-            get_object_or_404(Follow, user=request.user, cooker=get_object_or_404(User, pk=id)).delete()
+            get_object_or_404(Subscription, user=request.user, cooker=get_object_or_404(User, pk=id)).delete()
             return Response(status=HTTP_204_NO_CONTENT)
     
         return Response(status=HTTP_405_METHOD_NOT_ALLOWED)

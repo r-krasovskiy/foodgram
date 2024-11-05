@@ -4,9 +4,23 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+from django.core.files.base import ContentFile
 
-from api.constants import MAX_LENGTH_MIDDLE, MAX_LENGTH_LONG, MIN_COOKING_TIME, MAX_COOKING_TIME
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingList, Tag, IngredientRecipe, Follow
+from api.constants import (
+    MAX_LENGTH_MIDDLE,
+    MAX_LENGTH_LONG,
+    MIN_COOKING_TIME,
+    MAX_COOKING_TIME
+)
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    ShoppingList,
+    Tag,
+    IngredientRecipe,
+    Subscription
+)
 
 from djoser.serializers import UserCreateSerializer, UserSerializer
 
@@ -66,8 +80,7 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = Tag
-        fields = ('id', 'name', 'slug',)
-        read_only_fields = ('__all__',)
+        fields = ('__all__')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -75,8 +88,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta():
         model = Ingredient
-        fields = ('id', 'name',)
-        read_only_fields = ('__all__',)
+        fields = ('__all__')
 
 
 class FavoriteSerializer(serializers.ModelSerializer):

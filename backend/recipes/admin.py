@@ -3,7 +3,7 @@
 from django.contrib import admin
 
 from recipes.models import (
-    Favorite, Follow, Ingredient, IngredientRecipe, Recipe, ShoppingList, Tag
+    Favorite, Ingredient, IngredientRecipe, Recipe, ShoppingList, Subscription, Tag
 )
 
 
@@ -27,7 +27,7 @@ class FavoriteAdmin(admin.ModelAdmin):
     list_display = ('author', 'recipe',)
     search_fields = ('author',)
 
-class FollowAdmin(admin.ModelAdmin):
+class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'author',)
     search_fields = ('author',)
 
@@ -43,7 +43,7 @@ class IngredientRecipeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Favorite, FavoriteAdmin)
-admin.site.register(Follow, FollowAdmin)
+admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(IngredientRecipe, IngredientRecipeAdmin)
 admin.site.register(Recipe, RecipeAdmin)

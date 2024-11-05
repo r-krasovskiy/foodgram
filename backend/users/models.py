@@ -1,7 +1,7 @@
 """Модель пользователей."""
 
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser
 
 from api.constants import MAX_LENGTH_MIDDLE, MAX_LENGTH_SHORT
 
@@ -32,33 +32,22 @@ class User(AbstractUser):
     last_name = models.CharField(
         'Фамилия пользователя',
         max_length=MAX_LENGTH_MIDDLE)
+
     email = models.EmailField(
         'Адрес электронной почты',
         unique=True
     )
-    role = models.CharField(
-        'Роль пользователя',
-        default='User',
-        choices=USER_ROLE,
-        max_length=MAX_LENGTH_SHORT
-
-    )
-
-    groups = models.ManyToManyField(
-        Group,
-        related_name='custom_user_groups',
-        blank=True
-    )
-    user_permissions = models.ManyToManyField(
-        Permission,
-        related_name='custom_user_permissions',
-        blank=True
+    avatar = models.ImageField(
+        'Аватар пользователя',
+        blank=True,
+        null=True,
+        upload_to='profiles'
     )
 
     class Meta():
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+        ordering = ('username',)
 
-class Subscription(models.Model):
-    """Подписка на авторов контента."""
-    pass
+    def __str__(self):
+        return self.username
