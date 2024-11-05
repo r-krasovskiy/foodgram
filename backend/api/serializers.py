@@ -13,12 +13,12 @@ from api.constants import (
     MAX_COOKING_TIME
 )
 from recipes.models import (
-    Favorite,
+    FavoriteRecipe,
     Ingredient,
     Recipe,
     ShoppingList,
     Tag,
-    IngredientRecipe,
+    RecipeIngredient,
     Subscription
 )
 
@@ -103,7 +103,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(source='recipe', read_only=True)
 
     class Meta():
-        model = Favorite
+        model = FavoriteRecipe
         fields = ('id', 'name', 'image', 'coocking_time')
 
 
@@ -138,7 +138,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
         max_value=MAX_LENGTH_LONG)
 
     class Meta:
-        model = IngredientRecipe
+        model = RecipeIngredient
         fields = ('id', 'amount')
 
 
@@ -180,7 +180,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         return False
 
     def get_is_favorited(self, obj):
-        return self.get_is_recipe(obj, Favorite)
+        return self.get_is_recipe(obj, FavoriteRecipe)
 
     def get_is_in_shopping_cart(self, obj):
         return self.get_is_recipe(obj, ShoppingList)
