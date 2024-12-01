@@ -5,6 +5,7 @@ from django.core.management import BaseCommand
 import os
 from django.conf import settings
 
+
 from recipes.models import Ingredient
 
 
@@ -21,6 +22,6 @@ class Command(BaseCommand):
             for row in csv_reader:
                 Ingredient.objects.update_or_create(
                     name=row[0].strip(),
-                    measure=row[1].strip()
+                    measurement_unit=row[1].strip()
                 )
         self.stdout.write(self.style.SUCCESS('Данные успешно загружены'))

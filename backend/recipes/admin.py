@@ -3,9 +3,14 @@
 from django.contrib import admin
 
 from recipes.models import (
-    FavoriteRecipe, Ingredient, RecipeIngredient, Recipe, ShoppingList, Subscription, Tag
+    FavoriteRecipe,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Subscription,
+    Tag
 )
-
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -15,12 +20,12 @@ class TagAdmin(admin.ModelAdmin):
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('id', 'author', 'name',)
-    list_filter = ('tags', 'picture',)
+    list_filter = ('tags', 'image',)
     search_fields = ('author', 'name')
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'measure',)
-    list_filter = ('measure',)
+    list_display = ('name', 'measurement_unit',)
+    list_filter = ('measurement_unit',)
     search_fields = ('name',)
 
 class FavoriteRecipeAdmin(admin.ModelAdmin):
@@ -31,7 +36,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'author',)
     search_fields = ('author',)
 
-class ShoppingListAdmin(admin.ModelAdmin):
+class ShoppingCartAdmin(admin.ModelAdmin):
     list_display = ('user', 'recipe',)
     search_fields = ('user',)
 
@@ -47,5 +52,5 @@ admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(RecipeIngredient, RecipeIngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
-admin.site.register(ShoppingList, ShoppingListAdmin)
+admin.site.register(ShoppingCart, ShoppingCartAdmin)
 admin.site.register(Tag, TagAdmin)

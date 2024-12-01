@@ -42,7 +42,7 @@ class Ingredient(models.Model):
         max_length=MAX_LENGTH_LONG,
         help_text='Введите название ингридиента'
     )
-    measure = models.CharField(
+    measurement_unit = models.CharField(
         verbose_name='Единица измерения',
         max_length=MAX_LENGTH_LONG,
         help_text='Введите единицы измерения'
@@ -70,12 +70,12 @@ class Recipe(models.Model):
         max_length=MAX_LENGTH_LONG,
         help_text='Введите название рецепта'
     )
-    picture = models.ImageField(
+    image = models.ImageField(
         verbose_name='Фото рецепта',
         upload_to='media/',
         help_text='Добавьте фото рецепта.'
     )
-    description = models.TextField(
+    text = models.TextField(
         verbose_name='Описани рецепта',
         help_text='Опишите процесс приготовления блюда.'
     )
@@ -108,6 +108,9 @@ class Recipe(models.Model):
             models.UniqueConstraint(
                 fields=('name', 'author'),
                 name='unique_recipe')]
+
+    def __str__(self):
+        return f'{self.name} - {self.author}'
 
 
 class RecipeIngredient(models.Model):
@@ -171,7 +174,7 @@ class FavoriteRecipe(models.Model):
         return f'{self.recipe}'
 
 
-class ShoppingList(models.Model):
+class ShoppingCart(models.Model):
     """Список покупок для приготовления рецепта."""
 
     user = models.ForeignKey(
@@ -234,3 +237,27 @@ class Subscription(models.Model):
 
     def __str__(self):
         return f'Пользователь {self.user} подписан на {self.author}'
+
+class RecipeTag(models.Model):
+    """Тэги для рецептов."""
+
+    recipe = models.ForeignKey(
+        Recipe, on_delete=models.CASCADE,
+        verbose_name='Рецепт')
+    tag = models.ForeignKey(
+        Tag, on_delete=models.CASCADE,
+        verbose_name='Тег')
+
+    class Meta:
+        ordering = ('recipe', 'tag')
+        verbose_name = 'тэг для рецепта'
+        verbose_name_plural = 'Тэги для рецепта'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'tag'],
+                name='unique_recipe_tag'
+            )
+        ]
+
+    def __str__(self):
+        return f'На {self.tag} подойдёт {self.recipe}'
