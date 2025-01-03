@@ -29,8 +29,8 @@ class IngredientAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 class FavoriteRecipeAdmin(admin.ModelAdmin):
-    list_display = ('author', 'recipe',)
-    search_fields = ('author',)
+    list_display = ('user', 'recipe',)
+    search_fields = ('user',)
 
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ('user', 'author',)
