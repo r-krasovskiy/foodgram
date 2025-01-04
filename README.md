@@ -31,6 +31,7 @@ cd foodgram
 
 ### 2. Запустите фронтенд
 ```bash
+cd backend
 npm i
 npm run start
 ```
@@ -44,6 +45,17 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
+```
+
+### 4. Добавьте готовую базу ингрилиентов и тэгов для рецептов (опционально)
+```bash
+python manage.py import_ingredients
+python manage.py import_tags
+```
+
+### 5. Создайте суперпользователя для управления админ-зоной:
+```bash
+python manage.py createsuperuser
 ```
 
 ## Развертывние на серере
