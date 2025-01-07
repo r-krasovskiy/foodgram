@@ -1,3 +1,5 @@
+"""Workflow для автоматизации развертывания изменений на сервере."
+
 name: Main Taski workflow
 
 on:
