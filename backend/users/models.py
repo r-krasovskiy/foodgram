@@ -1,9 +1,8 @@
 """Модель пользователей."""
 
-from django.db import models
-from django.contrib.auth.models import AbstractUser
-
 from api.constants import MAX_LENGTH_MIDDLE, MAX_LENGTH_SHORT
+from django.contrib.auth.models import AbstractUser
+from django.db import models
 
 
 class User(AbstractUser):
@@ -45,9 +44,12 @@ class User(AbstractUser):
     )
 
     class Meta():
+        """Метаданные модели."""
+
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
         ordering = ('username',)
 
     def __str__(self):
+        """Возвращает строковое представление пользователя."""
         return self.username

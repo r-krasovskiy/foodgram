@@ -1,10 +1,9 @@
 """Модуль с моделями данных."""
+from api.constants import MAX_LENGTH_LONG, MAX_LENGTH_SHORT
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, Q
-
-from api.constants import MAX_LENGTH_LONG, MAX_LENGTH_SHORT
 
 User = get_user_model()
 

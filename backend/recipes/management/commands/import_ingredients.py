@@ -1,11 +1,10 @@
-"""Модуль для импорта готовой базы ингридиентов из CSV-файла с ингридиентами."""
+"""Модуль для импорта готовой базы CSV-файла с ингридиентами."""
 
 import os
 from csv import reader
 
 from django.conf import settings
 from django.core.management import BaseCommand
-
 from recipes.models import Ingredient
 
 
@@ -29,7 +28,9 @@ class Command(BaseCommand):
         ингредиенты в модель Ingredient. Используется метод update_or_create,
         чтобы избежать дублирования записей.
         """
-        file_path = os.path.join(settings.BASE_DIR, '..', 'data', 'ingredients.csv')
+        file_path = os.path.join(
+            settings.BASE_DIR, '..', 'data', 'ingredients.csv'
+        )
 
         with open(file_path, encoding='utf-8') as csv_file:
             csv_reader = reader(csv_file)

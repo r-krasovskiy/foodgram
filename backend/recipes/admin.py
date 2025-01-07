@@ -1,16 +1,8 @@
 """Зона администратра проекта."""
 
 from django.contrib import admin
-
-from recipes.models import (
-    FavoriteRecipe,
-    Ingredient,
-    Recipe,
-    RecipeIngredient,
-    ShoppingCart,
-    Subscription,
-    Tag
-)
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
+                            RecipeIngredient, ShoppingCart, Subscription, Tag)
 
 
 class TagAdmin(admin.ModelAdmin):
