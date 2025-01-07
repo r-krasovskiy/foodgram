@@ -5,9 +5,6 @@ from django_filters import FilterSet
 
 from django.contrib.auth import get_user_model
 
-from rest_framework.filters import SearchFilter
-
-
 from recipes.models import Ingredient, Recipe, Tag
 
 User = get_user_model()
@@ -49,6 +46,8 @@ class RecipeFilter(FilterSet):
         return queryset
 
     class Meta:
+        """Метаданные фильтра."""
+
         model = Recipe
         fields = ('tags', 'author', 'is_in_shopping_cart')
 
@@ -62,5 +61,7 @@ class IngredientFilter(FilterSet):
     )
 
     class Meta:
+        """Метаданные фильтра."""
+
         model = Ingredient
         fields = ('name',)
