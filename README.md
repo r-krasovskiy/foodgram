@@ -31,7 +31,7 @@ cd foodgram
 
 ### 2. Запустите фронтенд
 ```bash
-cd backend
+cd frontend
 npm i
 npm run start
 ```

@@ -40,4 +40,4 @@ services:
       - backend
       - frontend
     ports:
-      - 9000:80
+      - 10000:80
