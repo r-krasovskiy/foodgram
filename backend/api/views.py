@@ -1,48 +1,29 @@
 """Модуль представлений API."""
 
-from django.shortcuts import get_object_or_404, redirect
-from django.http import HttpResponse
-from django_filters.rest_framework import DjangoFilterBackend
-
-from rest_framework import viewsets
-from rest_framework.response import Response
-from rest_framework.status import (
-    HTTP_200_OK,
-    HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT
-)
-from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.decorators import action
-
 import short_url
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
+from foodgram import settings
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
+                            RecipeIngredient, ShoppingCart, Subscription, Tag,
+                            User)
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
+                                   HTTP_204_NO_CONTENT)
 
-from api.serializers import (
-    UserGetSerializer,
-    SubscriptionSerializer,
-    UserSubscriptionsSerializer,
-    IngredientSerializer,
-    TagSerializer,
-    RecipeGetSerializer,
-    RecipePostSerializer,
-    UserRecepieSerializer
-)
-
-from api.permissions import IsOwnerOrAdmin
 from api.filters import IngredientFilter, RecipeFilter
 from api.pagination import ApiPagination
-from recipes.models import (
-    Recipe,
-    User,
-    Subscription,
-    Tag,
-    Ingredient,
-    RecipeIngredient,
-    ShoppingCart,
-    FavoriteRecipe
-)
-
-from foodgram import settings
+from api.permissions import IsOwnerOrAdmin
+from api.serializers import (IngredientSerializer, RecipeGetSerializer,
+                             RecipePostSerializer, SubscriptionSerializer,
+                             TagSerializer, UserGetSerializer,
+                             UserRecepieSerializer,
+                             UserSubscriptionsSerializer)
 
 
 def redirect_view(request, s):
@@ -151,7 +132,7 @@ class UserViewSet(DjoserUserViewSet):
         limit_param = request.query_params.get('recipes_limit')
         paginated_queryset = self.paginate_queryset(users)
         serializer = UserSubscriptionsSerializer(
-            paginated_queryset, 
+            paginated_queryset,
             context={'limit_param': limit_param},
             many=True
         )
