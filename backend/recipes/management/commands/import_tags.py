@@ -8,6 +8,7 @@ from django.core.management import BaseCommand
 
 from recipes.models import Tag
 
+
 class Command(BaseCommand):
     """
     Загрузка данных из CSV файла с тегами в базу данных.

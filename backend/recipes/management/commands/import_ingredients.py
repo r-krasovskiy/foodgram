@@ -8,6 +8,7 @@ from django.core.management import BaseCommand
 
 from recipes.models import Ingredient
 
+
 class Command(BaseCommand):
     """
     Загрузка данных из CSV файла в базу данных.

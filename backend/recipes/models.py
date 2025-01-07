@@ -30,11 +30,14 @@ class Tag(models.Model):
     )
 
     class Meta():
+        """Метаданные модели."""
+
         ordering = ('id',)
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
     def __str__(self):
+        """Возвращает строковое представление тега."""
         return f'Тэг {self.name}'
 
 
@@ -54,11 +57,14 @@ class Ingredient(models.Model):
     )
 
     class Meta():
+        """Метаданные модели."""
+
         ordering = ('name',)
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
+        """Возвращает строковое представление ингридиента."""
         return f'Ингридиент {self.name}'
 
 
@@ -111,11 +117,14 @@ class Recipe(models.Model):
     )
 
     class Meta():
+        """Метаданные модели."""
+
         ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
     def __str__(self):
+        """Возвращает строковое представление рецепта."""
         return f'Рецепт {self.name} от автора {self.author}'
 
 
@@ -146,6 +155,8 @@ class RecipeIngredient(models.Model):
     )
 
     class Meta():
+        """Метаданные модели."""
+
         verbose_name = 'Ингридиенты рецепта'
         verbose_name_plural = 'Ингридиенты рецепта'
         constraints = [models.UniqueConstraint(
@@ -154,6 +165,7 @@ class RecipeIngredient(models.Model):
         )]
 
     def __str__(self):
+        """Возвращает строковое представление ингридиента."""
         return f'Ингридиент {self.ingredient} в количестве {self.amount}'
 
 
@@ -174,11 +186,14 @@ class FavoriteRecipe(models.Model):
     )
 
     class Meta:
+        """Метаданные модели."""
+
         ordering = ('user', 'recipe')
         verbose_name = 'Избранные рецепты'
         verbose_name_plural = 'Избранные рецепты'
 
     def __str__(self):
+        """Возвращает строковое представление рецепта в избранном."""
         return f'Рецепт {self.recipe} в избранном у пользователя {self.user}'
 
 
@@ -200,10 +215,13 @@ class ShoppingCart(models.Model):
     )
 
     class Meta:
+        """Метаданные модели."""
+
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Список покупок'
 
     def __str__(self):
+        """Возвращает строковое представление рецепта в списке."""
         return f'Рецепт {self.recipe} в списке {self.user}'
 
 
@@ -226,6 +244,8 @@ class Subscription(models.Model):
         default=1)
 
     class Meta:
+        """Метаданные модели."""
+
         verbose_name = 'Подписки'
         verbose_name_plural = 'Подписки'
         constraints = [
@@ -237,6 +257,7 @@ class Subscription(models.Model):
                 name='no_self_following')]
 
     def __str__(self):
+        """Возвращает строковое представление подписки."""
         return f'Пользователь {self.user} подписан на {self.author}'
 
 
@@ -253,6 +274,8 @@ class RecipeTag(models.Model):
         verbose_name='Тег')
 
     class Meta:
+        """Метаданные модели."""
+
         ordering = ('recipe', 'tag')
         verbose_name = 'Тег рецепта'
         verbose_name_plural = 'Теги рецепта'
@@ -264,4 +287,5 @@ class RecipeTag(models.Model):
         ]
 
     def __str__(self):
+        """Возвращает строковое представление тега."""
         return f'Тэг {self.tag} для рецепта {self.recipe}'
