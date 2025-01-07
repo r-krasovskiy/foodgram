@@ -14,8 +14,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'web']
+# Для развертывания на сервере:
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Для локального развертывания:
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'web']
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -64,7 +67,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-"""
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -76,7 +79,9 @@ DATABASES = {
     }
 }
 
+
 AUTH_USER_MODEL = 'users.User'
+
 """
 DATABASES = {
     'default': {
@@ -84,7 +89,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+"""
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
