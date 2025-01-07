@@ -2,6 +2,9 @@
 
 import base64
 
+from api.constants import (MAX_COOKING_TIME, MAX_INGREDIENTS,
+                           MAX_LENGTH_MIDDLE, MIN_COOKING_TIME,
+                           MIN_INGREDIENTS)
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.validators import RegexValidator
@@ -12,10 +15,6 @@ from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, RecipeTag, ShoppingCart,
                             Subscription, Tag)
 from rest_framework import serializers
-
-from api.constants import (MAX_COOKING_TIME, MAX_INGREDIENTS,
-                           MAX_LENGTH_MIDDLE, MIN_COOKING_TIME,
-                           MIN_INGREDIENTS)
 
 User = get_user_model()
 

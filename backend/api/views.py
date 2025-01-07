@@ -1,11 +1,18 @@
 """Модуль представлений API."""
 
 import short_url
+from api.filters import IngredientFilter, RecipeFilter
+from api.pagination import ApiPagination
+from api.permissions import IsOwnerOrAdmin
+from api.serializers import (IngredientSerializer, RecipeGetSerializer,
+                             RecipePostSerializer, SubscriptionSerializer,
+                             TagSerializer, UserGetSerializer,
+                             UserRecepieSerializer,
+                             UserSubscriptionsSerializer)
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
-from foodgram import settings
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Subscription, Tag,
                             User)
@@ -16,14 +23,7 @@ from rest_framework.response import Response
 from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
                                    HTTP_204_NO_CONTENT)
 
-from api.filters import IngredientFilter, RecipeFilter
-from api.pagination import ApiPagination
-from api.permissions import IsOwnerOrAdmin
-from api.serializers import (IngredientSerializer, RecipeGetSerializer,
-                             RecipePostSerializer, SubscriptionSerializer,
-                             TagSerializer, UserGetSerializer,
-                             UserRecepieSerializer,
-                             UserSubscriptionsSerializer)
+from foodgram import settings
 
 
 def redirect_view(request, s):
