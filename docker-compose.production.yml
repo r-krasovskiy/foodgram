@@ -1,7 +1,7 @@
 version: '3.3'
 
 volumes:
-  pg:
+  pg_data:
   static:
   media:
   docs:
