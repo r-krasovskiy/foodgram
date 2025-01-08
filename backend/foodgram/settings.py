@@ -67,7 +67,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
+# Для развертывания на сервере:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -82,6 +82,7 @@ DATABASES = {
 
 AUTH_USER_MODEL = 'users.User'
 
+# Для локального развертывания:
 """
 DATABASES = {
     'default': {
