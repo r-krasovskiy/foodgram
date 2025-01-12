@@ -1,3 +1,5 @@
+version: '3.8'
+
 volumes:
   pg_data:
   static:
@@ -20,6 +22,8 @@ services:
       - static:/backend_static
       - media:/app/media
       - docs:/docs
+    ports:
+      - "9000:9000"
     depends_on:
       - db
 
@@ -42,7 +46,19 @@ services:
       - media:/media
       - docs:/usr/share/nginx/html/api/docs
     ports:
-      - 8000:80
+      - "80:80"
+      - "443:443"
     depends_on:
       - backend
       - frontend
+
+  # Дополнительный сервис для очистки неиспользуемых Docker-образов
+  cleanup:
+    image: docker:cli  # Используем официальный образ Docker CLI
+    container_name: foodgram_cleanup
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Подключаем Docker socket
+    command: >
+      sh -c "docker image prune -af --filter 'until=24h'"
+    depends_on:
+      - gateway

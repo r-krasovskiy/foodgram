@@ -1,9 +1,10 @@
-version: '3'
+version: '3.8'
 
 volumes:
   pg_data:
   static:
   media:
+  docs:
 
 services:
   db:
@@ -14,32 +15,50 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   backend:
-    build: ./backend/
     container_name: foodgram_backend
+    image: romankrasowski/foodgram_backend
     env_file: .env
     volumes:
       - static:/backend_static
-      - media:/app/media/
+      - media:/app/media
+      - docs:/docs
+    ports:
+      - "9000:9000"
     depends_on:
       - db
 
   frontend:
-    env_file: .env
     container_name: foodgram_frontend
-    build: ./frontend/
-    command: cp -r /app/build/. /static/
+    image: romankrasowski/foodgram_frontend
+    env_file: .env
+    command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static:/static
+      - static:/frontend_static
+    depends_on:
+      - backend
 
   gateway:
-    build: ./nginx/
     container_name: foodgram_gateway
+    image: romankrasowski/foodgram_gateway
     env_file: .env
-    ports:
-      - 8000:80
     volumes:
-      - static:/static
-      - media:/app/media/
+      - static:/staticfiles
+      - media:/media
+      - docs:/usr/share/nginx/html/api/docs
+    ports:
+      - "80:80"
+      - "443:443"
     depends_on:
       - backend
       - frontend
+
+  # Дополнительный сервис для очистки неиспользуемых Docker-образов
+  cleanup:
+    image: docker:cli  # Используем официальный образ Docker CLI
+    container_name: foodgram_cleanup
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Подключаем Docker socket
+    command: >
+      sh -c "docker image prune -af --filter 'until=24h'"
+    depends_on:
+      - gateway
