@@ -2,9 +2,8 @@ version: '3.8'
 
 volumes:
   pg_data:
-  static:
-  media:
-  docs:
+  static:  # Общая директория для статики
+  media:   # Общая директория для медиа
 
 services:
   db:
@@ -15,51 +14,38 @@ services:
       - pg_data:/var/lib/postgresql/data
 
   backend:
-    container_name: foodgram_backend
     image: romankrasowski/foodgram_backend
+    container_name: foodgram_backend
     env_file: .env
     volumes:
-      - static:/app/collected_static
-      - media:/app/media
-      - docs:/docs
-    ports:
-      - "9000:9000"
+      - static:/app/collected_static  # Подключаем STATIC_ROOT из settings.py
+      - media:/app/media              # Подключаем MEDIA_ROOT из settings.py
     depends_on:
       - db
-    command: python manage.py collectstatic --noinput
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn foodgram.wsgi:application --bind 0.0.0.0:8000"
 
   frontend:
-    container_name: foodgram_frontend
     image: romankrasowski/foodgram_frontend
+    container_name: foodgram_frontend
     env_file: .env
-    command: cp -r /app/build/. /frontend_static/
     volumes:
-      - static:/frontend_static
+      - static:/static  # Общая директория для статики
     depends_on:
       - backend
+    command: cp -r /app/build/. /static/
 
   gateway:
-    container_name: foodgram_gateway
     image: romankrasowski/foodgram_gateway
+    container_name: foodgram_gateway
     env_file: .env
     volumes:
-      - static:/staticfiles
-      - media:/media
-      - docs:/usr/share/nginx/html/api/docs
-    ports:
-      - "8080:80"
-      - "8443:443"
+      - static:/static/  # Подключаем статику для Nginx
+      - media:/app/media/  # Подключаем медиа для Nginx
     depends_on:
       - backend
       - frontend
-
-  # Дополнительный сервис для очистки неиспользуемых Docker-образов
-  cleanup:
-    image: docker:cli
-    container_name: foodgram_cleanup
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: >
-      sh -c "docker image prune -af --filter 'until=24h'"
-    depends_on:
-      - gateway
+    ports:
+      - "80:80"
