@@ -19,7 +19,7 @@ services:
     image: romankrasowski/foodgram_backend
     env_file: .env
     volumes:
-      - static:/backend_static
+      - static:/app/collected_static
       - media:/app/media
       - docs:/docs
     ports:
@@ -54,10 +54,10 @@ services:
 
   # Дополнительный сервис для очистки неиспользуемых Docker-образов
   cleanup:
-    image: docker:cli  # Используем официальный образ Docker CLI
+    image: docker:cli
     container_name: foodgram_cleanup
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Подключаем Docker socket
+      - /var/run/docker.sock:/var/run/docker.sock
     command: >
       sh -c "docker image prune -af --filter 'until=24h'"
     depends_on:
