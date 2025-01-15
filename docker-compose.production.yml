@@ -26,6 +26,7 @@ services:
       - "9000:9000"
     depends_on:
       - db
+    command: python manage.py collectstatic --noinput
 
   frontend:
     container_name: foodgram_frontend
