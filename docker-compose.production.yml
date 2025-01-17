@@ -22,8 +22,6 @@ services:
       - static:/backend_static
       - media:/backend/media
       - docs:/docs
-    ports:
-      - "9000:9000"
     depends_on:
       - db
 
@@ -46,7 +44,7 @@ services:
       - media:/media
       - docs:/usr/share/nginx/html/api/docs
     ports:
-      - "8080:80"
+      - "8000:80"
     depends_on:
       - backend
       - frontend
