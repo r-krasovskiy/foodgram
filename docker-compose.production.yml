@@ -41,7 +41,7 @@ services:
     env_file: .env
     volumes:
       - static:/staticfiles
-      - media:/media
+      - ./media:/media/media
       - docs:/usr/share/nginx/html/api/docs
     ports:
       - 8000:80
