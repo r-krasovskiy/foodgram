@@ -20,7 +20,7 @@ services:
     env_file: .env
     volumes:
       - static:/backend_static
-      - media:/app/media
+      - media:/
       - docs:/docs
     ports:
       - "9000:9000"
