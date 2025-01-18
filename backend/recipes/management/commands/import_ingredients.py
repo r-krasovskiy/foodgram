@@ -29,7 +29,8 @@ class Command(BaseCommand):
         чтобы избежать дублирования записей.
         """
         file_path = os.path.join(
-            settings.BASE_DIR, '..', 'data', 'ingredients.csv'
+            settings.BASE_DIR, 'recipes', 'management', 'commands', 'data',
+            'ingredients.csv'
         )
 
         with open(file_path, encoding='utf-8') as csv_file:

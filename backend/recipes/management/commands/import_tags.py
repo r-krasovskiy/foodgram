@@ -28,7 +28,10 @@ class Command(BaseCommand):
         теги в модель Tag. Используется метод update_or_create, чтобы избежать
         дублирования записей.
         """
-        file_path = os.path.join(settings.BASE_DIR, '..', 'data', 'tags.csv')
+        file_path = os.path.join(
+            settings.BASE_DIR, 'recipes', 'management', 'commands', 'data',
+            'tags.csv'
+        )
 
         with open(file_path, encoding='utf-8') as csv_file:
             csv_reader = reader(csv_file)
