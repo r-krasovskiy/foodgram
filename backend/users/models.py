@@ -1,6 +1,6 @@
 """Модель пользователей."""
 
-from api.constants import MAX_LENGTH_MIDDLE, MAX_LENGTH_SHORT
+from api.constants import MAX_LENGTH_MIDDLE
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -17,12 +17,12 @@ class User(AbstractUser):
 
     username = models.CharField(
         'Логин пользователя',
-        max_length=MAX_LENGTH_SHORT,
+        max_length=MAX_LENGTH_MIDDLE,
         unique=True
     )
     password = models.CharField(
         'Пароль пользователя',
-        max_length=MAX_LENGTH_SHORT
+        max_length=MAX_LENGTH_MIDDLE
     )
     first_name = models.CharField(
         'Имя пользователя',
