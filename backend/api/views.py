@@ -276,7 +276,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe.short_url = short_link
         recipe.save()
 
-        url = f'http://{settings.ALLOWED_HOSTS[0]}/s/{short_link}/'
+        url = f'{"https" if request.is_secure() else "http"}://{request.get_host()}/s/{short_link}/'
 
         return Response({'short-link': url}, status=HTTP_200_OK)
 
