@@ -5,7 +5,7 @@ import base64
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.validators import RegexValidator
-from django.db.models import F, Q
+from django.db.models import F
 from django.shortcuts import get_list_or_404, get_object_or_404
 
 from djoser.serializers import UserCreateSerializer, UserSerializer
@@ -326,7 +326,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         ingredients = validated_data.pop('ingredients', [])
 
         instance = super().update(instance, validated_data)
-        
+
         if tags:
             instance.tags.set(tags)
 
@@ -381,7 +381,10 @@ class UserRecepieSerializer(serializers.Serializer):
                 'Данный рецепт не существует!'
             )
 
-        userrecipe_exists = model.objects.filter(user=user, recipe=recipe).exists()
+        userrecipe_exists = model.objects.filter(
+            user=user,
+            recipe=recipe
+        ).exists()
 
         if action == 'del':
             if not userrecipe_exists:

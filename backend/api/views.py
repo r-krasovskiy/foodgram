@@ -29,15 +29,10 @@ from recipes.models import (
 )
 
 
-def redirect_view(request, short_url_part):
-    """
-    Перенаправляет пользователя по короткому URL на страницу рецепта.
-    Декодирует короткую ссылку, извлекает идентификатор рецепта (pk)
-    и выполняет перенаправление на соответствующую страницу рецепта.
-    """
+def redirect_view(request, short_link):
+    """Перенаправляет по короткому URL на страницу рецепта."""
     try:
-        pk = short_url.decode_url(short_url_part)
-        recipe = get_object_or_404(Recipe, pk=pk)
+        pk = short_url.decode_url(short_link)
         return redirect(f'/recipes/{pk}/')
     except Exception as error:
         return HttpResponse(
@@ -254,7 +249,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @favorite.mapping.delete
     def delete_from_favorite(self, request, pk):
         """Удаляет рецепт из избранного пользователя."""
-
         recipe = get_object_or_404(Recipe, pk=pk)
         favorite_recipe = FavoriteRecipe.objects.filter(
             user=self.request.user,
