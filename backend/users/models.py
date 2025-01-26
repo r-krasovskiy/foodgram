@@ -1,8 +1,10 @@
 """Модель пользователей."""
 
-from api.constants import MAX_LENGTH_MIDDLE
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import RegexValidator
 from django.db import models
+
+from api.constants import MAX_LENGTH_MIDDLE
 
 
 class User(AbstractUser):
@@ -18,7 +20,15 @@ class User(AbstractUser):
     username = models.CharField(
         'Логин пользователя',
         max_length=MAX_LENGTH_MIDDLE,
-        unique=True
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex=r'^[\w.@+-]+$',
+                message='Введите корректное имя пользователя.'
+                'Допустимы только буквы, цифры и символы @/./+/-/_',
+                code='invalid',
+            )
+        ]
     )
     password = models.CharField(
         'Пароль пользователя',
@@ -40,10 +50,11 @@ class User(AbstractUser):
         'Аватар пользователя',
         blank=True,
         null=True,
-        upload_to='profiles'
+        upload_to='profiles',
+        default=''
     )
 
-    class Meta():
+    class Meta:
         """Метаданные модели."""
 
         verbose_name = 'Пользователь'

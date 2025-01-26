@@ -1,9 +1,11 @@
 """Модуль с моделями данных."""
-from api.constants import MAX_LENGTH_LONG, MAX_LENGTH_SHORT
+
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import F, Q
+
+from api.constants import MAX_LENGTH_LONG, MAX_LENGTH_SHORT
 
 User = get_user_model()
 
@@ -28,10 +30,10 @@ class Tag(models.Model):
         help_text='Укажите короткое имя (slug).'
     )
 
-    class Meta():
+    class Meta:
         """Метаданные модели."""
 
-        ordering = ('id',)
+        ordering = ('name',)
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -55,12 +57,13 @@ class Ingredient(models.Model):
         help_text='Введите единицы измерения.'
     )
 
-    class Meta():
+    class Meta:
         """Метаданные модели."""
 
         ordering = ('name',)
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
+        unique_together = ('name', 'measurement_unit')
 
     def __str__(self):
         """Возвращает строковое представление ингридиента."""
@@ -115,7 +118,16 @@ class Recipe(models.Model):
         auto_now_add=True,
     )
 
-    class Meta():
+    short_url = models.CharField(
+        max_length=MAX_LENGTH_SHORT,
+        unique=True,
+        blank=True,
+        null=True,
+        verbose_name='Короткая ссылка на рецпт',
+        help_text='Автоматически генерируемая короткая ссылка.'
+    )
+
+    class Meta:
         """Метаданные модели."""
 
         ordering = ('-pub_date',)
@@ -153,7 +165,7 @@ class RecipeIngredient(models.Model):
         help_text='Укажите количество.'
     )
 
-    class Meta():
+    class Meta:
         """Метаданные модели."""
 
         verbose_name = 'Ингридиенты рецепта'
@@ -190,6 +202,7 @@ class FavoriteRecipe(models.Model):
         ordering = ('user', 'recipe')
         verbose_name = 'Избранные рецепты'
         verbose_name_plural = 'Избранные рецепты'
+        unique_together = ('user', 'recipe')
 
     def __str__(self):
         """Возвращает строковое представление рецепта в избранном."""
@@ -232,15 +245,13 @@ class Subscription(models.Model):
         verbose_name='Пользователь',
         related_name='following',
         on_delete=models.CASCADE,
-        help_text='Текущий пользователь',
-        default=1)
+        help_text='Текущий пользователь')
     author = models.ForeignKey(
         User,
         verbose_name='Подписка',
         related_name='followers',
         on_delete=models.CASCADE,
-        help_text='Подписаться на автора рецепта',
-        default=1)
+        help_text='Подписаться на автора рецепта')
 
     class Meta:
         """Метаданные модели."""
@@ -258,33 +269,3 @@ class Subscription(models.Model):
     def __str__(self):
         """Возвращает строковое представление подписки."""
         return f'Пользователь {self.user} подписан на {self.author}'
-
-
-class RecipeTag(models.Model):
-    """Тэги для рецептов."""
-
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        verbose_name='Рецепт')
-    tag = models.ForeignKey(
-        Tag,
-        on_delete=models.CASCADE,
-        verbose_name='Тег')
-
-    class Meta:
-        """Метаданные модели."""
-
-        ordering = ('recipe', 'tag')
-        verbose_name = 'Тег рецепта'
-        verbose_name_plural = 'Теги рецепта'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'tag'],
-                name='unique_recipe_tag'
-            )
-        ]
-
-    def __str__(self):
-        """Возвращает строковое представление тега."""
-        return f'Тэг {self.tag} для рецепта {self.recipe}'

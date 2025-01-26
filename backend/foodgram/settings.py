@@ -14,11 +14,12 @@ SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# Для развертывания на сервере:
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-# Для локального развертывания:
-# ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'web']
-
+if DEBUG:
+    # Для локального развертывания
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'web']
+else:
+    # Для развертывания на сервере
+    ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -67,29 +68,30 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-# Для развертывания на сервере:
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
-        'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', ''),
-        'PORT': os.getenv('DB_PORT', 5432)
+if DEBUG:
+    # Для локального развертывания
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+else:
+    # Для развертывания на сервере
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('POSTGRES_DB', 'foodgram'),
+            'USER': os.getenv('POSTGRES_USER', 'foodgram_user'),
+            'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+            'HOST': os.getenv('DB_HOST', ''),
+            'PORT': os.getenv('DB_PORT', 5432)
+        }
+    }
 
 AUTH_USER_MODEL = 'users.User'
 
-# Для локального развертывания:
-"""
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-"""
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

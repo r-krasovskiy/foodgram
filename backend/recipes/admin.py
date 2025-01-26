@@ -1,8 +1,11 @@
 """Зона администратра проекта."""
 
 from django.contrib import admin
+
 from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Subscription, Tag)
+
+from users.models import User
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -58,6 +61,26 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+class UserAdmin(admin.ModelAdmin):
+    """Отображение в админке информации о пользователях."""
+
+    list_display = (
+        'id', 'username', 'email', 'first_name', 'last_name',
+        'avatar', 'recipe_count', 'follower_count'
+    )
+    list_filter = ('is_superuser',)
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+
+    def recipe_count(self, obj):
+        """Количество рецептов пользователя."""
+        return obj.recipes.count()
+    recipe_count.short_description = 'Количество рецептов'
+
+    def follower_count(self, obj):
+        """Количество подписчиков пользователя."""
+        return Subscription.objects.filter(author=obj).count()
+
+
 admin.site.register(FavoriteRecipe, FavoriteRecipeAdmin)
 admin.site.register(Subscription, SubscriptionAdmin)
 admin.site.register(Ingredient, IngredientAdmin)
@@ -65,3 +88,4 @@ admin.site.register(RecipeIngredient, RecipeIngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(ShoppingCart, ShoppingCartAdmin)
 admin.site.register(Tag, TagAdmin)
+admin.site.register(User, UserAdmin)

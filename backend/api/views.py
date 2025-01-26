@@ -1,40 +1,49 @@
 """Модуль представлений API."""
 
-import short_url
-from api.filters import IngredientFilter, RecipeFilter
-from api.pagination import ApiPagination
-from api.permissions import IsOwnerOrAdmin
-from api.serializers import (IngredientSerializer, RecipeGetSerializer,
-                             RecipePostSerializer, SubscriptionSerializer,
-                             TagSerializer, UserGetSerializer,
-                             UserRecepieSerializer,
-                             UserSubscriptionsSerializer)
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
-from django_filters.rest_framework import DjangoFilterBackend
+
+import short_url
 from djoser.views import UserViewSet as DjoserUserViewSet
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
-                            RecipeIngredient, ShoppingCart, Subscription, Tag,
-                            User)
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.status import (HTTP_200_OK, HTTP_201_CREATED,
-                                   HTTP_204_NO_CONTENT)
+from rest_framework.status import (
+    HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+)
+from django_filters.rest_framework import DjangoFilterBackend
 
+from api.filters import IngredientFilter, RecipeFilter
+from api.pagination import ApiPagination
+from api.permissions import IsOwnerOrAdmin
+from api.serializers import (
+    IngredientSerializer, RecipeGetSerializer, RecipePostSerializer,
+    SubscriptionSerializer, TagSerializer, UserGetSerializer,
+    UserRecepieSerializer, UserSubscriptionsSerializer
+)
 from foodgram import settings
+from recipes.models import (
+    FavoriteRecipe, Ingredient, Recipe, RecipeIngredient, ShoppingCart,
+    Subscription, Tag, User
+)
 
 
-def redirect_view(request, s):
+def redirect_view(request, short_url_part):
     """
     Перенаправляет пользователя по короткому URL на страницу рецепта.
-
     Декодирует короткую ссылку, извлекает идентификатор рецепта (pk)
     и выполняет перенаправление на соответствующую страницу рецепта.
     """
-    pk = short_url.decode_url(s)
-    return redirect(f'/recipes/{pk}/')
+    try:
+        pk = short_url.decode_url(short_url_part)
+        recipe = get_object_or_404(Recipe, pk=pk)
+        return redirect(f'/recipes/{pk}/')
+    except Exception as error:
+        return HttpResponse(
+            f"Ошибка при декодировании ссылки: {error}",
+            status=HTTP_400_BAD_REQUEST
+        )
 
 
 class UserViewSet(DjoserUserViewSet):
@@ -245,31 +254,36 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @favorite.mapping.delete
     def delete_from_favorite(self, request, pk):
         """Удаляет рецепт из избранного пользователя."""
-        serializer = UserRecepieSerializer(
-            data=request.data,
-            context={
-                'request': request,
-                'recipe_pk': pk,
-                'action': 'del',
-                'model': FavoriteRecipe
-            }
-        )
-        serializer.is_valid(raise_exception=True)
-        get_object_or_404(
-            FavoriteRecipe,
+
+        recipe = get_object_or_404(Recipe, pk=pk)
+        favorite_recipe = FavoriteRecipe.objects.filter(
             user=self.request.user,
-            recipe=get_object_or_404(Recipe, pk=pk)
-        ).delete()
-        return Response(status=HTTP_204_NO_CONTENT)
+            recipe=recipe
+        )
+        if not favorite_recipe.exists():
+            return Response(
+                {"detail": "Рецепт не был найден в избранном."},
+                status=HTTP_400_BAD_REQUEST
+            )
+        deleted_count, _ = favorite_recipe.delete()
+        if deleted_count:
+            return Response(status=HTTP_204_NO_CONTENT)
+        return Response(
+            {"detail": "Не удалось удалить рецепт из избранного."},
+            status=HTTP_400_BAD_REQUEST
+        )
 
     @action(detail=True, permission_classes=(AllowAny,), url_path='get-link')
     def get_short_link(self, request, pk):
         """Генерирует короткую ссылку на рецепт."""
         recipe = get_object_or_404(Recipe, pk=pk)
-        url = (
-            f'http://{settings.ALLOWED_HOSTS[0]}/s/'
-            f'{short_url.encode_url(recipe.id)}/'
-        )
+
+        short_link = short_url.encode_url(recipe.id)
+        recipe.short_url = short_link
+        recipe.save()
+
+        url = f'http://{settings.ALLOWED_HOSTS[0]}/s/{short_link}/'
+
         return Response({'short-link': url}, status=HTTP_200_OK)
 
     @action(detail=True, permission_classes=(IsAuthenticated,))
@@ -296,22 +310,18 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @shopping_cart.mapping.delete
     def delete_from_shopping_cart(self, request, pk):
         """Удаляет рецепт из списка покупок пользователя."""
-        serializer = UserRecepieSerializer(
-            data=request.data,
-            context={
-                'request': request,
-                'recipe_pk': pk,
-                'action': 'del',
-                'model': ShoppingCart
-            }
-        )
-        serializer.is_valid(raise_exception=True)
-        get_object_or_404(
-            ShoppingCart,
+        recipe = get_object_or_404(Recipe, pk=pk)
+        shopping_cart_recipe = ShoppingCart.objects.filter(
             user=self.request.user,
-            recipe=get_object_or_404(Recipe, pk=pk)
-        ).delete()
-        return Response(status=HTTP_204_NO_CONTENT)
+            recipe=recipe
+        )
+        deleted_count, _ = shopping_cart_recipe.delete()
+        if deleted_count:
+            return Response(status=HTTP_204_NO_CONTENT)
+        return Response(
+            {"detail": "Рецепт не найден в списке покупок."},
+            status=HTTP_400_BAD_REQUEST
+        )
 
     @action(
         detail=False,

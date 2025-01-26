@@ -2,19 +2,24 @@
 
 import base64
 
-from api.constants import (MAX_COOKING_TIME, MAX_INGREDIENTS,
-                           MAX_LENGTH_MIDDLE, MIN_COOKING_TIME,
-                           MIN_INGREDIENTS)
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.core.validators import RegexValidator
 from django.db.models import F, Q
 from django.shortcuts import get_list_or_404, get_object_or_404
+
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
-                            RecipeIngredient, RecipeTag, ShoppingCart,
-                            Subscription, Tag)
 from rest_framework import serializers
+
+from api.constants import (
+    MAX_COOKING_TIME, MAX_INGREDIENTS, MAX_LENGTH_MIDDLE,
+    MIN_COOKING_TIME, MIN_INGREDIENTS
+)
+
+from recipes.models import (
+    FavoriteRecipe, Ingredient, Recipe, RecipeIngredient, ShoppingCart,
+    Subscription, Tag
+)
 
 User = get_user_model()
 
@@ -172,6 +177,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time'
         )
+        read_only_fields = fields
 
     def get_ingredients(self, obj):
         """Возвращает список ингредиентов рецепта с их количеством."""
@@ -188,17 +194,6 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         if request and not request.user.is_anonymous:
             return model.objects.filter(user=request.user, recipe=obj).exists()
         return False
-
-    def filter_queryset_by_tags(self, queryset):
-        """Фильтрует рецепты по тегам с использованием логики OR."""
-        request = self.context.get('request')
-        tag_slugs = request.query_params.getlist('tags')
-        if tag_slugs:
-            query = Q()
-            for slug in tag_slugs:
-                query |= Q(tags__slug=slug)
-            return queryset.filter(query).distinct()
-        return queryset
 
     def get_is_favorited(self, obj):
         """Проверяет, добавлен ли рецепт в избранное текущим пользователем."""
@@ -307,16 +302,15 @@ class RecipePostSerializer(serializers.ModelSerializer):
 
         return data
 
-    def add_tags_ingredients(self, recipe, tags, ingredients):
-        """Удаление старых тегов и ингредиентов, а затем добавление новых."""
-        RecipeTag.objects.filter(recipe=recipe).delete()
-        RecipeIngredient.objects.filter(recipe=recipe).delete()
+    def create(self, validated_data):
+        """Создание нового рецепта с привязкой тегов и ингредиентов."""
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        recipe = Recipe.objects.create(**validated_data)
 
-        RecipeTag.objects.bulk_create([
-            RecipeTag(recipe=recipe, tag=tag) for tag in tags
-        ])
+        recipe.tags.set(tags)
 
-        RecipeIngredient.objects.bulk_create([
+        recipe.ingredients_recipe.bulk_create([
             RecipeIngredient(
                 recipe=recipe,
                 ingredient=ingredient['id'],
@@ -324,12 +318,6 @@ class RecipePostSerializer(serializers.ModelSerializer):
             ) for ingredient in ingredients
         ])
 
-    def create(self, validated_data):
-        """Создание нового рецепта с привязкой тегов и ингредиентов."""
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
-        recipe = Recipe.objects.create(**validated_data)
-        self.add_tags_ingredients(recipe, tags, ingredients)
         return recipe
 
     def update(self, instance, validated_data):
@@ -337,10 +325,20 @@ class RecipePostSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags', [])
         ingredients = validated_data.pop('ingredients', [])
 
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
+        instance = super().update(instance, validated_data)
+        
+        if tags:
+            instance.tags.set(tags)
 
-        self.add_tags_ingredients(instance, tags, ingredients)
+        if ingredients:
+            instance.ingredients.clear()
+            instance.ingredients_recipe.bulk_create([
+                RecipeIngredient(
+                    recipe=instance,
+                    ingredient=ingredient['id'],
+                    amount=ingredient['amount']
+                ) for ingredient in ingredients
+            ])
 
         instance.save()
         return instance
@@ -383,15 +381,16 @@ class UserRecepieSerializer(serializers.Serializer):
                 'Данный рецепт не существует!'
             )
 
-        userrecipe = model.objects.filter(user=user, recipe=recipe)
+        userrecipe_exists = model.objects.filter(user=user, recipe=recipe).exists()
+
         if action == 'del':
-            if not userrecipe:
+            if not userrecipe_exists:
                 raise serializers.ValidationError(
                     'Данный рецепт не существует!'
                 )
 
         if action == 'add':
-            if userrecipe:
+            if userrecipe_exists:
                 raise serializers.ValidationError(
                     'Данный рецепт уже существует!'
                 )
@@ -500,8 +499,15 @@ class UserSubscriptionsSerializer(serializers.ModelSerializer):
         """Получение списка рецептов пользователя."""
         recipes = obj.recipes.all()
 
-        if limit_param := self.context.get('limit_param'):
-            recipes = recipes[:int(limit_param)]
+        limit_param = self.context.get('limit_param')
+        if limit_param:
+            try:
+                limit = int(limit_param)
+                recipes = recipes[:limit]
+            except (ValueError, TypeError):
+                raise serializers.ValidationError(
+                    "Параметр 'limit_param' должен быть целым числом."
+                )
 
         serializer = RecipeListSerializer(recipes, many=True, read_only=True)
         return serializer.data
