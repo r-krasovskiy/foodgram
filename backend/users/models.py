@@ -5,6 +5,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 from api.constants import MAX_LENGTH_MIDDLE
+from users.views import CustomUserManager
 
 
 class User(AbstractUser):
@@ -53,6 +54,10 @@ class User(AbstractUser):
         upload_to='profiles',
         default=''
     )
+
+    objects = CustomUserManager()
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
     class Meta:
         """Метаданные модели."""

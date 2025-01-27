@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 
 import short_url
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet as DjoserUserViewSet
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -12,7 +13,6 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 )
-from django_filters.rest_framework import DjangoFilterBackend
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.pagination import ApiPagination

@@ -7,7 +7,6 @@ from django.core.files.base import ContentFile
 from django.core.validators import RegexValidator
 from django.db.models import F
 from django.shortcuts import get_list_or_404, get_object_or_404
-
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
@@ -15,7 +14,6 @@ from api.constants import (
     MAX_COOKING_TIME, MAX_INGREDIENTS, MAX_LENGTH_MIDDLE,
     MIN_COOKING_TIME, MIN_INGREDIENTS
 )
-
 from recipes.models import (
     FavoriteRecipe, Ingredient, Recipe, RecipeIngredient, ShoppingCart,
     Subscription, Tag
