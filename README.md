@@ -105,5 +105,12 @@ Telegram сообщение об успешном деплойменте в пр
 ## Пример развернутого проекта
 https://foodgram.ddnsfree.com/
 
+![for_portfolio1](https://github.com/user-attachments/assets/cd427ddf-504e-492a-a240-ba08a98b7208)
+![for_portfolio2](https://github.com/user-attachments/assets/10f6dbf6-933f-4ce3-886b-8b23dc4ba2bc)
+![for_portfolio3](https://github.com/user-attachments/assets/9529666c-5114-4c19-98c8-1d9644ed5f77)
+![for_portfolio4](https://github.com/user-attachments/assets/37ad52eb-beb0-49db-8154-371d41a2491d)
+![for_portfolio5](https://github.com/user-attachments/assets/4608c697-6a55-4b57-ad22-e2e354d2a127)
+![for_portfolio6](https://github.com/user-attachments/assets/d5616c93-0192-4e99-8039-ce6c497b332f)
+
 #### Автор
 Roman Krasowski
