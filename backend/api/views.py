@@ -22,7 +22,6 @@ from api.serializers import (
     SubscriptionSerializer, TagSerializer, UserGetSerializer,
     UserRecepieSerializer, UserSubscriptionsSerializer
 )
-from foodgram import settings
 from recipes.models import (
     FavoriteRecipe, Ingredient, Recipe, RecipeIngredient, ShoppingCart,
     Subscription, Tag, User
@@ -271,13 +270,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_short_link(self, request, pk):
         """Генерирует короткую ссылку на рецепт."""
         recipe = get_object_or_404(Recipe, pk=pk)
-
         short_link = short_url.encode_url(recipe.id)
         recipe.short_url = short_link
         recipe.save()
-
-        url = f'{"https" if request.is_secure() else "http"}://{request.get_host()}/s/{short_link}/'
-
+        url = (
+            f'{"https" if request.is_secure() else "http"}://'
+            f'{request.get_host()}/s/{short_link}/'
+        )
         return Response({'short-link': url}, status=HTTP_200_OK)
 
     @action(detail=True, permission_classes=(IsAuthenticated,))

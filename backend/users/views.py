@@ -2,6 +2,7 @@
 
 from django.contrib.auth.models import BaseUserManager
 
+
 class CustomUserManager(BaseUserManager):
     """Кастомный менеджер для модели пользователя."""
 
@@ -26,9 +27,13 @@ class CustomUserManager(BaseUserManager):
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Суперпользователь должен иметь is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Суперпользователь должен иметь is_superuser=True.')
+            raise ValueError(
+                'Суперпользователь должен иметь is_superuser=True.'
+            )
 
         if 'first_name' not in extra_fields or 'last_name' not in extra_fields:
-            raise ValueError('Для суперпользователя необходимо указать имя и фамилию.')
+            raise ValueError(
+                'Для суперпользователя необходимо указать имя и фамилию.'
+            )
 
         return self.create_user(email, username, password, **extra_fields)
